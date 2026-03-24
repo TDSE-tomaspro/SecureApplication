@@ -1,0 +1,3 @@
+com\tomass\secureapp\config\SecurityConfig.class
+com\tomass\secureapp\controller\AuthController.class
+com\tomass\secureapp\SecureApplication.class
