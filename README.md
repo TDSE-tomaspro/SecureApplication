@@ -1,63 +1,71 @@
 # Secure Application Deployment
+### Author: Tomas Felipe Ramirez Alvarez
+This is the delivery for the Application and Secure Architecture requirement.
 
-Esta es la entrega para el requerimiento de Aplicación y Arquitectura Segura.
+## Introduction
 
-### Credenciales de Acceso (Testing)
-- **Usuario:** `admin`
-- **Contraseña:** `password`
-*(Validado mediante hash `BCrypt`)*
+In this project, we will deploy a secure web application developed in Java with Spring Boot on an Amazon Web Services (AWS) EC2 instance. The primary goal is to guarantee that the application complies with modern security standards to protect user data and communication.
 
-## Entregables
-- **Documento de Diseño:** Puedes leer más sobre la arquitectura y la estrategia segura en AWS en el archivo [ARCHITECTURE.md](ARCHITECTURE.md).
-- **Video Demostrativo:** [Coloca aquí el link de tu video de YouTube/Drive]
-- **Screenshots de Testing:** [Agrega tus imágenes a la carpeta y enlaza aquí, ej: `![Login](captura1.png)`]
+**Importance:**
+Information security is a fundamental pillar in software development and infrastructure deployment. The importance of this project lies in the practical application of multiple security layers, which include:
+- Configuring encrypted connections using HTTPS (TLS/SSL with Let's Encrypt) for external traffic.
+- Implementing a secure reverse proxy using Apache.
+- Protecting user passwords utilizing the secure `BCrypt` hashing algorithm.
+- Isolating and controlling traffic using AWS Security Groups.
+
+These practices protect the application's integrity and confidentiality, guarantee that sensitive data never travels in plain text, and ensure compliance with secure architecture regulations.
+
+### Access Credentials (Testing)
+- **Username:** `admin`
+- **Password:** `password`
+*(Validated via `BCrypt` hash)*
 
 ---
 
-## Características de Seguridad Implementadas
-Este laboratorio cumple con las especificaciones de seguridad requeridas:
-1. **Conexiones Seguras TLS (Let's Encrypt):** El tráfico interactivo asíncrono viaja protegido bajo HTTPS oficial.
+## Implemented Security Features
+This lab complies with the required security specifications:
+1. **Secure TLS Connections (Let's Encrypt):** Asynchronous interactive traffic travels protected under official HTTPS.
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/7.jpg)
-2. **Proxy Inverso Seguro Interno:** La comunicación interna del Servidor Web (Apache) con el Servidor Back-End (Spring Boot) se configuró asegurada sobre TLS (`SSLProxyEngine`).
+2. **Internal Secure Reverse Proxy:** The internal communication from the Web Server (Apache) to the Back-End Server (Spring Boot) was configured securely over TLS (`SSLProxyEngine`).
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/8.jpg)
-3. **Manejo Seguro de Contraseñas (`BCrypt`):** Se implementó `BCryptPasswordEncoder` en Spring Security; ni siquiera localmente la memoria guarda claves en texto plano.
+3. **Secure Password Management (`BCrypt`):** `BCryptPasswordEncoder` was implemented in Spring Security; not even memory locally stores plain text keys.
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/9.jpg)
-4. **Firewall Perimetral (AWS Security Group):** Bloqueo en todos los puertos no estandar; aplicación visible sólo a través de los puertos 80 y 443 externos.
+4. **Perimeter Firewall (AWS Security Group):** Blocked all non-standard ports; application visible only through external ports 80 and 443.
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/10.jpg)
 
 ---
 
-## Guía de Despliegue en AWS
+## AWS Deployment Guide
 
-Estos son los pasos exactos para poner en funcionamiento el servidor web con proxy y Let's Encrypt en la instancia `ec2-user` de Amazon Linux 2023.
+These are the exact steps to get the web server running with a proxy and Let's Encrypt on the Amazon Linux 2023 `ec2-user` instance.
 
-### 1. Preparación del Servidor
-En tu consola de AWS EC2:
-1. Asegúrate de configurar en el Security Group:
-   - `HTTP` (80) abierto a todos (0.0.0.0/0).
-   - `HTTPS` (443) abierto a todos (0.0.0.0/0).
-   - `SSH` (22) abierto a "Mi IP".
-2. Conéctate a tu instancia EC2 por SSH.
-3. Actualiza el servidor e instala las dependencias de Java 21, Apache y Maven:
+### 1. Server Preparation
+In your AWS EC2 Console:
+1. Make sure your Security Group is configured with:
+   - `HTTP` (80) open to everyone (0.0.0.0/0).
+   - `HTTPS` (443) open to everyone (0.0.0.0/0).
+   - `SSH` (22) open to "My IP".
+2. Connect to your EC2 instance via SSH.
+3. Update the server and install the Java 21, Apache, and Maven dependencies:
    ```bash
    sudo dnf update -y
    sudo dnf install -y java-21-amazon-corretto-devel java-21-amazon-corretto maven httpd mod_ssl
    ```
 
-### 2. Despliegue de la Aplicación Spring Boot
-Clona y compila tu proyecto:
+### 2. Spring Boot Application Deployment
+Clone and compile your project:
 ```bash
 git clone https://github.com/TDSE-tomaspro/SecureApplication.git
 cd SecureApplication
 mvn clean package -DskipTests
 ```
-Ejecuta la aplicación en su puerto interno seguro (8443):
+Run the application on its secure internal port (8443):
 ```bash
 nohup java -jar target/secureapp-0.0.1-SNAPSHOT.jar &
 ```
 
-### 3. Configuración de Let's Encrypt (`certbot`)
-En Amazon Linux 2023 certbot se instala en un entorno virtual de Python:
+### 3. Let's Encrypt Configuration (`certbot`)
+In Amazon Linux 2023, certbot is installed in a Python virtual environment:
 ```bash
 sudo dnf install -y augeas-libs python3 python3-pip
 sudo python3 -m venv /opt/certbot/
@@ -65,52 +73,53 @@ sudo /opt/certbot/bin/pip install --upgrade pip
 sudo /opt/certbot/bin/pip install certbot certbot-apache
 sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
 ```
-Para usar Let's Encrypt asocia un dominio a la IP Pública de tu EC2 y ejecuta:
+To use Let's Encrypt, associate a domain to your EC2 Public IP and run:
 ```bash
 sudo certbot --apache -d tarea50por.duckdns.org
 ```
 
-### 4. Configurar el Reverse Proxy Seguro (TLS hacia Spring)
-1. Edita el archivo de configuración SSL que apache utiliza (usualmente en `/etc/httpd/conf.d/ssl.conf` o el generado por certbot):
+### 4. Configure Secure Reverse Proxy (TLS to Spring)
+1. Edit the SSL configuration file used by apache (usually in `/etc/httpd/conf.d/ssl.conf` or the one generated by certbot):
    ```bash
    sudo nano /etc/httpd/conf.d/ssl.conf
    ```
-2. Modifica o agrega dentro de la etiqueta `<VirtualHost _default_:443>` (o el VirtualHost de tu dominio) las siguientes líneas:
+2. Modify or add these lines inside the `<VirtualHost _default_:443>` tag (or your domain's VirtualHost):
 
    ```apache
    <VirtualHost _default_:443>
-       # (Líneas previas generadas por Certbot o por defecto del SSL)
+       # (Previous lines generated by Certbot or by SSL default)
 
-       # Activar proxy seguro a Spring Boot
+       # Activate secure proxy to Spring Boot
        SSLProxyEngine on
        SSLProxyVerify none 
        SSLProxyCheckPeerCN off
        SSLProxyCheckPeerName off
        SSLProxyCheckPeerExpire off
 
-       # Servir la interfaz estática
+       # Serve static interface
        DocumentRoot /var/www/html/SecureApplication/src/main/resources/static
        
-       # Proxy hacia el API backend
+       # Proxy towards the backend API
        ProxyPass /api/ https://localhost:8443/api/
        ProxyPassReverse /api/ https://localhost:8443/api/
    </VirtualHost>
    ```
-3. Reinicia y habilita el servidor Apache:
+3. Restart and enable the Apache server:
    ```bash
    sudo systemctl restart httpd
    sudo systemctl enable httpd
    ```
 
- la página web en `https://tarea50por.duckdns.org` y ver un Login seguro asíncrono
+The web page should now be accessible at `https://tarea50por.duckdns.org` displaying an asynchronous Secure Login.
 
-## Credenciales Locales
-Por defecto el usuario y la contraseña almacenados en el `SecurityConfig` son:
-- **Username:** `admin`
-- **Password:** `password`
-(La contraseña está validada mediante `BCrypt` y almacenada en memoria).
+## Conclusions
 
-## Evidencias
+1. **Robust Security Architecture:** Implementing a reverse proxy with Apache effectively isolates the Spring Boot application from direct external access. By handling HTTPS termination at the public layer using Let's Encrypt and securing the internal traffic with an `SSLProxyEngine`, we successfully mitigate direct exposure to vulnerabilities while ensuring end-to-end encryption.
+2. **Data Protection through Hashing:** Storing sensitive information in plain text presents a critical security risk. The integration of `BCryptPasswordEncoder` within Spring Security guarantees that even in the event of an unauthorized memory or database dump, the underlying user credentials remain completely secure, irreversible, and protected against brute-force attacks.
+3. **AWS Infrastructure Hardening:** True application security extends beyond the code level deeply into network infrastructure. The rigorous configuration of AWS EC2 Security Groups—restricting inbound traffic exclusively to ports 80 and 443—demonstrates the critical importance of establishing a minimal attack surface and tightly controlling all network entry points in a production environment.
+
+
+## Evidences
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/1.jpg)
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/2.jpg)
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/3.jpg)
@@ -126,3 +135,17 @@ Por defecto el usuario y la contraseña almacenados en el `SecurityConfig` son:
  
  ## video:
  - https://youtu.be/Y-y058OFObU?si=5oYXshSQ5JbtWmvs
+
+# Class Work (50%) - Evidences
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/17.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/18.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/19.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/20.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/21.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/22.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/23.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/24.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/25.png)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/26.png) 
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/27.jpg) 
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/28.jpg)
