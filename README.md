@@ -124,3 +124,5 @@ Por defecto el usuario y la contraseña almacenados en el `SecurityConfig` son:
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/16.jpg)
 - ![alt text](src/main/java/com/tomass/secureapp/Imagenes/15.jpg)
  
+ ## video:
+ - https://youtu.be/Y-y058OFObU?si=5oYXshSQ5JbtWmvs
