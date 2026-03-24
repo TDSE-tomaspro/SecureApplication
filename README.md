@@ -2,10 +2,24 @@
 
 Esta es la entrega para el requerimiento de Aplicación y Arquitectura Segura.
 
+### Credenciales de Acceso (Testing)
+- **Usuario:** `admin`
+- **Contraseña:** `password`
+*(Validado mediante hash `BCrypt`)*
+
 ## Entregables
 - **Documento de Diseño:** Puedes leer más sobre la arquitectura y la estrategia segura en AWS en el archivo [ARCHITECTURE.md](ARCHITECTURE.md).
 - **Video Demostrativo:** [Coloca aquí el link de tu video de YouTube/Drive]
 - **Screenshots de Testing:** [Agrega tus imágenes a la carpeta y enlaza aquí, ej: `![Login](captura1.png)`]
+
+---
+
+## Características de Seguridad Implementadas (Homework)
+Este laboratorio cumple con las especificaciones de seguridad requeridas:
+1. **Conexiones Seguras TLS (Let's Encrypt):** El tráfico interactivo asíncrono viaja protegido bajo HTTPS oficial.
+2. **Proxy Inverso Seguro Interno:** La comunicación interna del Servidor Web (Apache) con el Servidor Back-End (Spring Boot) se configuró asegurada sobre TLS (`SSLProxyEngine`).
+3. **Manejo Seguro de Contraseñas (`BCrypt`):** Se implementó `BCryptPasswordEncoder` en Spring Security; ni siquiera localmente la memoria guarda claves en texto plano.
+4. **Firewall Perimetral (AWS Security Group):** Bloqueo en todos los puertos no estandar; aplicación visible sólo a través de los puertos 80 y 443 externos.
 
 ---
 
@@ -23,7 +37,7 @@ En tu consola de AWS EC2:
 3. Actualiza el servidor e instala las dependencias de Java 21, Apache y Maven:
    ```bash
    sudo dnf update -y
-   sudo dnf install -y java-21-amazon-corretto-headless maven httpd mod_ssl
+   sudo dnf install -y java-21-amazon-corretto-devel java-21-amazon-corretto maven httpd mod_ssl
    ```
 
 ### 2. Despliegue de la Aplicación Spring Boot

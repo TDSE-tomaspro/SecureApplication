@@ -19,8 +19,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         
         if (response.ok) {
             const data = await response.json();
-            messageDiv.textContent = data.message;
+            messageDiv.innerHTML = `<h3>🎉 ¡Hola Mundo!</h3><p>${data.message}</p><p style="color:#28a745; font-size: 13px;">🔒 Conexión validada por Let's Encrypt</p>`;
             messageDiv.className = 'success';
+            document.getElementById('loginForm').style.display = 'none';
         } else {
             messageDiv.textContent = 'Login failed. Invalid credentials.';
             messageDiv.className = '';
