@@ -14,16 +14,20 @@ Esta es la entrega para el requerimiento de Aplicación y Arquitectura Segura.
 
 ---
 
-## Características de Seguridad Implementadas (Homework)
+## Características de Seguridad Implementadas
 Este laboratorio cumple con las especificaciones de seguridad requeridas:
 1. **Conexiones Seguras TLS (Let's Encrypt):** El tráfico interactivo asíncrono viaja protegido bajo HTTPS oficial.
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/7.jpg)
 2. **Proxy Inverso Seguro Interno:** La comunicación interna del Servidor Web (Apache) con el Servidor Back-End (Spring Boot) se configuró asegurada sobre TLS (`SSLProxyEngine`).
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/8.jpg)
 3. **Manejo Seguro de Contraseñas (`BCrypt`):** Se implementó `BCryptPasswordEncoder` en Spring Security; ni siquiera localmente la memoria guarda claves en texto plano.
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/9.jpg)
 4. **Firewall Perimetral (AWS Security Group):** Bloqueo en todos los puertos no estandar; aplicación visible sólo a través de los puertos 80 y 443 externos.
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/10.jpg)
 
 ---
 
-## Guía de Despliegue en AWS (Amazon Linux 2023)
+## Guía de Despliegue en AWS
 
 Estos son los pasos exactos para poner en funcionamiento el servidor web con proxy y Let's Encrypt en la instancia `ec2-user` de Amazon Linux 2023.
 
@@ -49,7 +53,6 @@ mvn clean package -DskipTests
 ```
 Ejecuta la aplicación en su puerto interno seguro (8443):
 ```bash
-# Ejecutar de fondo:
 nohup java -jar target/secureapp-0.0.1-SNAPSHOT.jar &
 ```
 
@@ -99,10 +102,25 @@ sudo certbot --apache -d tarea50por.duckdns.org
    sudo systemctl enable httpd
    ```
 
-¡Ya deberías poder acceder a la página web en `https://tarea50por.duckdns.org` y ver un Login seguro asíncrono!
+ la página web en `https://tarea50por.duckdns.org` y ver un Login seguro asíncrono
 
 ## Credenciales Locales
 Por defecto el usuario y la contraseña almacenados en el `SecurityConfig` son:
 - **Username:** `admin`
 - **Password:** `password`
 (La contraseña está validada mediante `BCrypt` y almacenada en memoria).
+
+## Evidencias
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/1.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/2.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/3.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/4.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/5.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/11.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/6.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/12.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/13.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/14.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/16.jpg)
+- ![alt text](src/main/java/com/tomass/secureapp/Imagenes/15.jpg)
+ 
